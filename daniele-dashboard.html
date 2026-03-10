@@ -301,9 +301,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:16
 <div class="section">
   <div class="section-title">
     <span>STATISTICHE SETTIMANA</span>
-    <button class="collapse-btn" onclick="toggleSection('stats-body',this)">▲ CHIUDI</button>
+    <button class="collapse-btn" onclick="toggleSection('stats-body',this)">▼ APRI</button>
   </div>
-  <div id="stats-body" class="collapsible" style="max-height:600px;">
+  <div id="stats-body" class="collapsible closed" style="max-height:600px;">
     <div class="scards" id="stats-container"></div>
   </div>
 </div>
@@ -315,21 +315,12 @@ body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:16
     <button class="collapse-btn" onclick="toggleSection('phil-body',this)">▲ CHIUDI</button>
   </div>
   <div id="phil-body" class="collapsible" style="max-height:600px;">
-    <div class="qblock" id="daily-quote">
-      "Non cercare che le cose accadano come vuoi tu; vuoi che accadano come accadono, e sarai felice."
-      <span class="qauthor">Epitteto</span>
-    </div>
+    <div id="phil-frase" style="margin-bottom:14px;padding:12px 14px;border-left:3px solid var(--accent);background:var(--surface);font-family:var(--serif);font-style:italic;font-size:15px;line-height:1.6;color:var(--text);"></div>
     <div class="memento">
       <div class="memento-lbl">Settimane rimanenti</div>
       <div class="memento-val" id="weeks-left2">—</div>
       <div class="memento-sub">stimato 90 anni · memento mori</div>
     </div>
-    <ul class="rlist">
-      <li class="ritem">Fai ciò che va fatto, quando va fatto</li>
-      <li class="ritem">La mente si allena come il corpo</li>
-      <li class="ritem">Nam-myoho-renge-kyo: causa e effetto</li>
-      <li class="ritem">Dicotomia del controllo: agisci, non temere</li>
-    </ul>
   </div>
 </div>
 
@@ -337,9 +328,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:16
 <div class="section">
   <div class="section-title">
     <span>COSA VUOI MIGLIORARE</span>
-    <button class="collapse-btn" onclick="toggleSection('aree-body',this)">▲ CHIUDI</button>
+    <button class="collapse-btn" onclick="toggleSection('aree-body',this)">▼ APRI</button>
   </div>
-  <div id="aree-body" class="collapsible" style="max-height:9999px;">
+  <div id="aree-body" class="collapsible closed" style="max-height:9999px;">
     <p class="hint" style="margin-bottom:16px;">Quanto ti senti in equilibrio? Trascina gli slider.</p>
     <div style="display:flex;justify-content:center;margin-bottom:16px;">
       <svg id="aree-radar" viewBox="0 0 300 300" style="width:100%;max-width:280px;"></svg>
@@ -358,8 +349,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:16
 
 <!-- GRATITUDINE -->
 <div class="section">
-  <div class="section-title"><span>GRATITUDINE SERALE 🌙</span></div>
-  <p class="hint" style="margin-bottom:12px;">Tre cose per cui sei grato oggi:</p>
+  <div class="section-title"><span>GRATITUDINE SERALE 🌙</span><button class="collapse-btn" onclick="toggleSection('grat-body',this)">▼ APRI</button></div>
+  <div id="grat-body" class="collapsible closed" style="max-height:400px;"><p class="hint" style="margin-bottom:12px;">Tre cose per cui sei grato oggi:</p>
   <div class="gfield"><span class="gnum">1.</span><input class="inp" id="grat-1" placeholder="..." style="margin-bottom:0;font-size:13px;"></div>
   <div class="gfield"><span class="gnum">2.</span><input class="inp" id="grat-2" placeholder="..." style="margin-bottom:0;font-size:13px;"></div>
   <div class="gfield"><span class="gnum">3.</span><input class="inp" id="grat-3" placeholder="..." style="margin-bottom:0;font-size:13px;"></div>
@@ -383,6 +374,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:16
   <div style="text-align:center;font-size:9px;">Trail Mugello · TFA · 1% ogni giorno</div>
 </div>
 
+</div>
 <!-- DIARIO -->
 <div id="diario-section" style="display:none;border-top:2px solid var(--border);background:var(--bg);">
   <div style="padding:16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);">
@@ -1322,7 +1314,8 @@ document.getElementById('mantra-bar').addEventListener('click',function(){
 
 function setDailyQuote() {
   var d=new Date(), idx=(d.getDate()+d.getMonth()*3)%QUOTES.length, q=QUOTES[idx];
-  document.getElementById('daily-quote').innerHTML='"'+q.q+'" <span class="qauthor">'+q.a+'</span>';
+  var el = document.getElementById('phil-frase');
+  if (el) el.innerHTML='"'+q.q+'" <span class="qauthor" style="display:block;margin-top:8px;font-size:10px;letter-spacing:2px;color:var(--muted);">'+q.a+'</span>';
 }
 
 
@@ -1364,6 +1357,7 @@ renderStats();
 setDailyQuote();
 loadGratitudine();
 renderAreeRadar();
+setDailyQuote();
 checkDomenicaAlert();
 </script>
 </body>
