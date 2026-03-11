@@ -367,10 +367,12 @@ body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:16
 <!-- GRATITUDINE -->
 <div class="section">
   <div class="section-title"><span>GRATITUDINE SERALE 🌙</span><button class="collapse-btn" onclick="toggleSection('grat-body',this)">▼ APRI</button></div>
-  <div id="grat-body" class="collapsible closed" style="max-height:400px;"><p class="hint" style="margin-bottom:12px;">Tre cose per cui sei grato oggi:</p>
+  <div id="grat-body" class="collapsible closed" style="max-height:600px;"><p class="hint" style="margin-bottom:12px;">Tre cose per cui sei grato oggi:</p>
   <div class="gfield"><span class="gnum">1.</span><input class="inp" id="grat-1" placeholder="..." style="margin-bottom:0;font-size:13px;"></div>
   <div class="gfield"><span class="gnum">2.</span><input class="inp" id="grat-2" placeholder="..." style="margin-bottom:0;font-size:13px;"></div>
   <div class="gfield"><span class="gnum">3.</span><input class="inp" id="grat-3" placeholder="..." style="margin-bottom:0;font-size:13px;"></div>
+  <div style="margin-top:10px;font-size:9px;letter-spacing:3px;color:var(--accent);text-transform:uppercase;">VISIONE — COSA HO FATTO OGGI</div>
+  <div class="gfield"><span class="gnum">→</span><input class="inp" id="grat-4" placeholder="..." style="margin-bottom:0;font-size:13px;"></div>
   <div style="margin-top:12px;display:flex;justify-content:space-between;align-items:center;">
     <span id="grat-saved" style="font-size:11px;color:var(--accent2);"></span>
     <button class="btn" onclick="saveGratitudine()">SALVA</button>
