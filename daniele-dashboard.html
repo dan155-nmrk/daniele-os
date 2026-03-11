@@ -197,9 +197,26 @@ body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:16
   </div>
 </div>
 
+
+<!-- VISIONE -->
+<div class="section">
+  <div class="section-title">
+    <span>VISIONE 🔭</span>
+    <button class="collapse-btn" onclick="toggleSection('vision-body',this)">▲ CHIUDI</button>
+  </div>
+  <div id="vision-body" class="collapsible" style="max-height:800px;">
+    <div id="vision-affirmation"></div>
+    <div id="vision-reread" style="display:none;flex-direction:column;gap:10px;"></div>
+    <div style="text-align:center;margin-top:10px;"><button class="btn" onclick="visionReread()" style="font-size:11px;letter-spacing:2px;">RILEGGI TUTTE</button></div>
+  </div>
+</div>
+
+
+
+
 <!-- LA COSA UNA -->
 <div class="section">
-  <div class="section-title"><span>LA COSA UNA</span><span>◈</span></div>
+  <div class="section-title"><span>OBIETTIVO DI OGGI</span><span>◈</span></div>
   <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:8px;">
     <div class="one-disp" id="one-disp" style="margin-bottom:0;flex:1;">?</div>
     <div class="one-done-box" id="one-done-box" onclick="toggleOneDone()" style="margin-top:4px;cursor:pointer;flex-shrink:0;"></div>
@@ -361,7 +378,17 @@ body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:16
   <div id="grat-history" style="margin-top:10px;border-top:1px solid var(--border);padding-top:10px;"></div>
 </div>
 
-<!-- FOOTER -->
+<!-- DISCIPLINA -->
+<div class="section" id="disc-pill" onclick="disciplinaPress()" style="cursor:pointer;text-align:center;">
+  <div style="font-size:9px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:6px;">💪 DISCIPLINA → 65KG</div>
+  <div style="font-family:var(--display);font-size:64px;letter-spacing:2px;line-height:1;" id="disc-count">—</div>
+  <div style="font-size:11px;color:var(--muted);margin-top:6px;" id="disc-sub">giorni rimasti · tocca la sera</div>
+</div>
+
+
+
+
+
 <div class="footer">
   <div class="pgwrap">
     <span>ANNO</span>
@@ -369,12 +396,14 @@ body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:16
     <span id="year-pct">—</span>
   </div>
   <div style="display:flex;gap:8px;flex-wrap:wrap;">
-    <button class="btn" onclick="toggleDiario()" style="flex:1;" id="diario-btn">📖 DIARIO GRATITUDINE</button>
+    <button class="btn" onclick="toggleDiario()" id="diario-btn" style="flex:1;">📖 DIARIO GRATITUDINE</button>
   </div>
   <div style="text-align:center;font-size:9px;">Trail Mugello · TFA · 1% ogni giorno</div>
 </div>
 
 </div>
+
+<!-- FOOTER -->
 <!-- DIARIO -->
 <div id="diario-section" style="display:none;border-top:2px solid var(--border);background:var(--bg);">
   <div style="padding:16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);">
@@ -670,6 +699,7 @@ function renderDiario() {
   c.innerHTML = '<div style="font-size:10px;letter-spacing:2px;color:var(--muted);margin-bottom:16px;">' + grat.length + ' GIORNI REGISTRATI</div>' +
     grat.map(function(e) {
       var items = [e.g1, e.g2, e.g3].filter(Boolean);
+      var vision = e.g4 || null;
       if (!items.length) return '';
       return '<div style="border-bottom:1px solid var(--border);padding:14px 0;">' +
         '<div style="font-size:10px;letter-spacing:3px;color:var(--accent);text-transform:uppercase;margin-bottom:10px;">' + e.date + '</div>' +
@@ -969,6 +999,130 @@ function renderAreeRadar() {
       document.addEventListener("mouseup",   function(){ dragging=false; });
     })(i);
   });
+}
+
+
+var AFFERMAZIONI = [
+  { area:"CORPO & SALUTE",    color:"#e07820", text:"Sono forte, sano e sportivo. Il mio fisico è atletico e vivo felice la vita." },
+  { area:"LAVORO & CARRIERA", color:"#3a8a4a", text:"Guadagno 1.800€ al mese, sono un insegnante che si diverte a lavoro." },
+  { area:"VITA & LIBERTÀ",    color:"#3a7abf", text:"Mi godo il mare, la montagna, la moto, le relazioni e l'esperienza con il mio CamperVan." },
+  { area:"FINANZA & FUTURO",  color:"#c8a820", text:"Ho una casa al mare che produce rendita e con le ripetizioni ho un futuro solido in ETF." },
+  { area:"IDENTITÀ",          color:"#9a7340", text:"Sono libero, sicuro di me e disciplinato. Ho un ruolo nella società e un futuro felice. Sono solare e pronto a tutto." }
+];
+
+function renderVision() {
+  var el = document.getElementById("vision-affirmation");
+  var reread = document.getElementById("vision-reread");
+  if (!el) return;
+
+  // Reset giornaliero
+  var today = new Date();
+  var key = today.getFullYear()+"-"+today.getMonth()+"-"+today.getDate();
+  if (localStorage.getItem("dn_vision_date") !== key) {
+    localStorage.setItem("dn_vision_date", key);
+    localStorage.setItem("dn_vision_done", "[]");
+  }
+
+  var done = JSON.parse(localStorage.getItem("dn_vision_done") || "[]");
+  var remaining = AFFERMAZIONI.filter(function(a,i){ return done.indexOf(i)===-1; });
+
+  reread.style.display = "none";
+  el.style.display = "flex";
+  el.style.flexDirection = "column";
+  el.style.gap = "10px";
+
+  if (remaining.length === 0) {
+    el.innerHTML = "";
+    return;
+  }
+
+  el.innerHTML = "<div style='font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:4px;'>TOCCA UNA FRASE PER CONFERMARLA ✓</div>" +
+    AFFERMAZIONI.map(function(a, i) {
+      var isDone = done.indexOf(i) !== -1;
+      return "<div onclick='visionTap("+i+",this)' style='padding:14px;background:var(--surface);border-left:3px solid "+a.color+";border-radius:2px;cursor:pointer;transition:opacity .3s;"+(isDone?"opacity:0.25;text-decoration:line-through;":"")+"'>"+
+        "<div style='font-size:9px;letter-spacing:3px;color:"+a.color+";text-transform:uppercase;margin-bottom:6px;'>"+a.area+"</div>"+
+        "<div style='font-family:var(--serif);font-size:15px;line-height:1.6;font-style:italic;'>"+a.text+"</div>"+
+      "</div>";
+    }).join("");
+}
+
+function visionTap(idx, el) {
+  var done = JSON.parse(localStorage.getItem("dn_vision_done") || "[]");
+  if (done.indexOf(idx) !== -1) return;
+  done.push(idx);
+  localStorage.setItem("dn_vision_done", JSON.stringify(done));
+  el.style.opacity = "0";
+  el.style.transition = "opacity 0.4s";
+  setTimeout(function() {
+    el.style.display = "none";
+    if (done.length === AFFERMAZIONI.length) {
+
+    }
+  }, 400);
+}
+
+function visionReread() {
+  var el = document.getElementById("vision-affirmation");
+  var reread = document.getElementById("vision-reread");
+  el.style.display = "none";
+  reread.style.display = "flex";
+  reread.style.flexDirection = "column";
+  reread.style.gap = "10px";
+  reread.innerHTML = AFFERMAZIONI.map(function(a) {
+    return "<div style='padding:14px;background:var(--surface);border-left:3px solid "+a.color+";border-radius:2px;'>"+
+      "<div style='font-size:9px;letter-spacing:3px;color:"+a.color+";text-transform:uppercase;margin-bottom:6px;'>"+a.area+"</div>"+
+      "<div style='font-family:var(--serif);font-size:15px;line-height:1.6;font-style:italic;'>"+a.text+"</div>"+
+    "</div>";
+  }).join("") +
+  "<button class='btn' onclick='renderVision()' style='font-size:11px;'>← TORNA</button>";
+}
+
+var DISC_TARGET = 126; // giorni per arrivare a 65kg
+
+var discData = (function() {
+  var d = JSON.parse(localStorage.getItem("dn_disc") || "null");
+  if (!d) return { count: DISC_TARGET, lastDate: null };
+  return d;
+})();
+
+function renderDisc() {
+  var el = document.getElementById("disc-count");
+  var sub = document.getElementById("disc-sub");
+  var pill = document.getElementById("disc-pill");
+  if (!el) return;
+
+  var today = new Date();
+  var key = today.getFullYear()+"-"+today.getMonth()+"-"+today.getDate();
+  var pressed = discData.lastDate === key;
+
+  el.textContent = discData.count;
+  el.style.color = discData.count <= 30 ? "var(--accent2)" : discData.count <= 60 ? "var(--accent)" : "var(--danger)";
+
+  if (pressed) {
+    sub.textContent = "✓ giornata pulita!";
+    pill.style.background = "rgba(58,138,74,0.06)";
+  } else {
+    sub.textContent = "giorni rimasti · tocca la sera";
+    pill.style.background = "";
+  }
+}
+
+function disciplinaPress() {
+  var today = new Date();
+  var key = today.getFullYear()+"-"+today.getMonth()+"-"+today.getDate();
+  if (discData.lastDate === key) {
+    showNotif("Già segnato oggi 💪");
+    return;
+  }
+  discData.count = Math.max(0, discData.count - 1);
+  discData.lastDate = key;
+  localStorage.setItem("dn_disc", JSON.stringify(discData));
+  renderDisc();
+  if (discData.count === 0) {
+    showNotif("🎯 65kg RAGGIUNTO! Missione completata!");
+  } else {
+    showNotif("💪 -1 giorno! Rimangono " + discData.count + " giorni");
+  }
 }
 
 function updateDate() {
@@ -1273,6 +1427,7 @@ function loadGratitudine() {
     document.getElementById('grat-1').value=entry.g1||'';
     document.getElementById('grat-2').value=entry.g2||'';
     document.getElementById('grat-3').value=entry.g3||'';
+    document.getElementById('grat-4').value=entry.g4||'';
     document.getElementById('grat-saved').textContent='✓ Salvato oggi';
   }
   renderGratHistory();
@@ -1281,10 +1436,11 @@ function saveGratitudine() {
   var g1=document.getElementById('grat-1').value.trim();
   var g2=document.getElementById('grat-2').value.trim();
   var g3=document.getElementById('grat-3').value.trim();
-  if(!g1&&!g2&&!g3) return;
+  var g4=document.getElementById('grat-4').value.trim();
+  if(!g1&&!g2&&!g3&&!g4) return;
   var today=gratKey();
   gratitudine=gratitudine.filter(function(e){return e.date!==today;});
-  gratitudine.unshift({date:today,g1:g1,g2:g2,g3:g3});
+  gratitudine.unshift({date:today,g1:g1,g2:g2,g3:g3,g4:g4});
   if(gratitudine.length>30) gratitudine=gratitudine.slice(0,30);
   localStorage.setItem('dn_grat',JSON.stringify(gratitudine));
   document.getElementById('grat-saved').textContent='✓ Salvato';
@@ -1296,6 +1452,7 @@ function renderGratHistory() {
   var recent=gratitudine.slice(1,4);
   if(!recent.length){el.innerHTML='';return;}
   el.innerHTML=recent.map(function(e){
+    var v4 = e.g4 ? '<div style="font-size:11px;color:var(--accent);margin-top:3px;font-style:italic;">→ '+e.g4+'</div>' : '';
     return '<div style="margin-bottom:8px;opacity:.55;">'+
       '<div style="font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:2px;">'+e.date+'</div>'+
       [e.g1,e.g2,e.g3].filter(Boolean).map(function(g){
@@ -1357,6 +1514,8 @@ renderStats();
 setDailyQuote();
 loadGratitudine();
 renderAreeRadar();
+renderDisc();
+renderVision();
 setDailyQuote();
 checkDomenicaAlert();
 </script>
