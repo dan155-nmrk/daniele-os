@@ -711,6 +711,7 @@ function renderDiario() {
             '<span style="font-family:var(--serif);font-style:italic;font-size:17px;line-height:1.5;">' + g + '</span>' +
             '</div>';
         }).join('') +
+        (vision ? '<div style="margin-top:8px;padding:8px 12px;border-left:2px solid var(--accent);font-size:13px;font-family:var(--serif);font-style:italic;color:var(--accent2);">→ ' + vision + '</div>' : '') +
       '</div>';
     }).join('');
 }
@@ -1203,9 +1204,13 @@ function toggleOneDone() {
 document.getElementById('one-inp').addEventListener('input',function(e){
   oneThing=e.target.value; localStorage.setItem('dn_one',oneThing);
   document.getElementById('one-disp').textContent=oneThing.substring(0,22)||'?';
+  var today=new Date(), key=today.getFullYear()+'-'+today.getMonth()+'-'+today.getDate();
+  localStorage.setItem('dn_one_done_date', key);
 });
 document.getElementById('next-inp').addEventListener('input',function(e){
   nextAction=e.target.value; localStorage.setItem('dn_next',nextAction);
+  var today=new Date(), key=today.getFullYear()+'-'+today.getMonth()+'-'+today.getDate();
+  localStorage.setItem('dn_one_done_date', key);
 });
 
 function taskAgeBadge(ts, done) {
