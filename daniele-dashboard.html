@@ -993,6 +993,7 @@ function renderAreeRadar() {
         document.getElementById("athumb"+idx).style.left = v*10+"%";
         document.getElementById("aval"+idx).textContent = v;
         drawRadar();
+        localStorage.setItem("dn_aree_vals", JSON.stringify(areeVals));
       }
       tr.addEventListener("touchstart", function(e){ dragging=true; setVal(e); e.preventDefault(); }, {passive:false});
       tr.addEventListener("touchmove",  function(e){ if(dragging) setVal(e); e.preventDefault(); }, {passive:false});
@@ -1456,7 +1457,7 @@ function saveGratitudine() {
 }
 function renderGratHistory() {
   var el=document.getElementById('grat-history');
-  var recent=gratitudine.slice(1,4);
+  var recent=gratitudine.slice(0,3);
   if(!recent.length){el.innerHTML='';return;}
   el.innerHTML=recent.map(function(e){
     var v4 = e.g4 ? '<div style="font-size:11px;color:var(--accent);margin-top:3px;font-style:italic;">→ '+e.g4+'</div>' : '';
@@ -1490,6 +1491,23 @@ function setDailyQuote() {
   if (!hasSeed) {
     storico.push({ date:"2026-03-08", vals:[6,5,6,4,5] });
     localStorage.setItem("dn_aree_storico", JSON.stringify(storico));
+  }
+})();
+
+// Reset aree della vita ogni lunedì
+(function() {
+  var today = new Date();
+  var key = today.getFullYear()+'-'+today.getMonth()+'-'+today.getDate();
+  var savedWeek = localStorage.getItem("dn_aree_week");
+  // calcola il lunedì di questa settimana
+  var dow = today.getDay() === 0 ? 7 : today.getDay();
+  var monday = new Date(today);
+  monday.setDate(today.getDate() - (dow - 1));
+  var mondayKey = monday.getFullYear()+'-'+monday.getMonth()+'-'+monday.getDate();
+  if (savedWeek !== mondayKey) {
+    localStorage.setItem("dn_aree_week", mondayKey);
+    areeVals = [5,5,5,5,5];
+    localStorage.setItem("dn_aree_vals", JSON.stringify(areeVals));
   }
 })();
 
