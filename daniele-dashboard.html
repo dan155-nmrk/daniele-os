@@ -1087,7 +1087,7 @@ function renderVision() {
 
   // Reset giornaliero
   var today = new Date();
-  var key = today.getFullYear()+"-"+today.getMonth()+"-"+today.getDate();
+  var key = today.getFullYear()+"-"+String(today.getMonth()+1).padStart(2,"0")+"-"+String(today.getDate()).padStart(2,"0");
   if (localStorage.getItem("dn_vision_date") !== key) {
     localStorage.setItem("dn_vision_date", key);
     localStorage.setItem("dn_vision_done", "[]");
@@ -1591,6 +1591,14 @@ function setDailyQuote() {
 var MESI_IT=['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
 var planData=JSON.parse(localStorage.getItem('dn_plan')||'{"week":[],"month":[],"year":[]}');
 function savePlan(){localStorage.setItem('dn_plan',JSON.stringify(planData));}
+function planMove(level,idx,dir){
+  var arr=planData[level];
+  var to=idx+dir;
+  if(to<0||to>=arr.length)return;
+  var tmp=arr[idx];arr[idx]=arr[to];arr[to]=tmp;
+  savePlan();
+  renderPlanList(level,level==='week'?'#3a7abf':level==='month'?'#3a8a4a':'#c8a820');
+}
 function renderPlanList(level,color){
   var el=document.getElementById('plan-'+level+'-list');
   if(!el)return;
@@ -1611,8 +1619,15 @@ function renderPlanList(level,color){
         +'<button class="plan-pct-btn" onclick="planChg(\''+level+'\','+i+',10)">+</button>'
         +'</div>';
     }
+    var upBtn=i>0
+      ?'<button onclick="planMove(\''+level+'\','+i+',-1)" style="background:none;border:none;color:#bbb;font-size:13px;cursor:pointer;padding:1px 3px;line-height:1;">&#9650;</button>'
+      :'<span style="display:inline-block;width:22px;"></span>';
+    var dnBtn=i<goals.length-1
+      ?'<button onclick="planMove(\''+level+'\','+i+',1)" style="background:none;border:none;color:#bbb;font-size:13px;cursor:pointer;padding:1px 3px;line-height:1;">&#9660;</button>'
+      :'<span style="display:inline-block;width:22px;"></span>';
     out+='<div class="plan-goal" style="border-left-color:'+color+';">'
       +'<div class="plan-goal-row">'
+      +'<div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;margin-right:6px;">'+upBtn+dnBtn+'</div>'
       +'<div class="plan-goal-text" style="'+ds+'">'+g.text+'</div>'
       +'<div style="display:flex;gap:6px;flex-shrink:0;">'
       +'<button class="plan-chk" style="color:'+(g.done?color:'#ccc')+';border-color:'+(g.done?color:'#ccc')+';" onclick="planToggle(\''+level+'\','+i+')">'+(g.done?'v':'o')+'</button>'
