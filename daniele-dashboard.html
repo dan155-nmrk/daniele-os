@@ -147,6 +147,17 @@ body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:16
 .collapse-btn{background:none;border:none;cursor:pointer;font-family:var(--mono);font-size:9px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;padding:0;}
 .collapsible{overflow:hidden;transition:max-height .3s ease;}
 .collapsible.closed{max-height:0 !important;}
+
+.plan-add-btn{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:0 4px;line-height:1;}
+.plan-add-btn:active{color:var(--accent);}
+.plan-goal{background:var(--surface);border-left:3px solid #ccc;padding:10px 12px;border-radius:2px;margin-bottom:8px;}
+.plan-goal-row{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;}
+.plan-goal-text{font-family:var(--serif);font-style:italic;font-size:14px;line-height:1.4;flex:1;}
+.plan-goal-text.done{text-decoration:line-through;opacity:.4;}
+.plan-chk{background:none;border:1px solid #ccc;border-radius:3px;padding:2px 7px;font-size:11px;cursor:pointer;font-family:var(--mono);}
+.plan-del{background:none;border:none;color:#ccc;font-size:16px;cursor:pointer;line-height:1;}
+.plan-pct-btn{background:none;border:1px solid #ccc;color:var(--text);border-radius:3px;width:26px;height:26px;font-size:15px;cursor:pointer;line-height:1;}
+.plan-pct-val{font-size:10px;color:var(--muted);font-family:monospace;min-width:28px;text-align:center;}
 </style>
 </head>
 <body>
@@ -213,6 +224,60 @@ body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:16
 
 
 
+
+<!-- PIANIFICAZIONE -->
+<div class="section">
+  <div class="section-title">
+    <span>PIANIFICAZIONE 🗺</span>
+    <button class="collapse-btn" onclick="toggleSection('plan-body',this)">▲ CHIUDI</button>
+  </div>
+  <div id="plan-body" class="collapsible" style="max-height:9999px;">
+    <div style="position:relative;padding-left:24px;">
+      <div style="position:absolute;left:8px;top:0;bottom:0;width:2px;background:var(--border);"></div>
+      <div style="position:relative;margin-bottom:24px;">
+        <div style="position:absolute;left:-20px;top:3px;width:12px;height:12px;border-radius:50%;background:#3a7abf;"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <div>
+            <div style="font-size:11px;letter-spacing:2px;color:#3a7abf;text-transform:uppercase;font-weight:500;" id="plan-week-lbl">SETTIMANA</div>
+            <div style="font-size:9px;color:var(--muted);margin-top:1px;">max 2 priorità · si azzera lunedì</div>
+          </div>
+          <button class="plan-add-btn" onclick="addPlanGoal('week')">＋</button>
+        </div>
+        <div id="plan-week-list"></div>
+      </div>
+      <div style="position:relative;margin-bottom:24px;">
+        <div style="position:absolute;left:-20px;top:3px;width:12px;height:12px;border-radius:50%;background:#3a8a4a;"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <div>
+            <div style="font-size:11px;letter-spacing:2px;color:#3a8a4a;text-transform:uppercase;font-weight:500;" id="plan-month-lbl">MESE</div>
+            <div style="font-size:9px;color:var(--muted);margin-top:1px;">focus del mese · si azzera il 1°</div>
+          </div>
+          <button class="plan-add-btn" onclick="addPlanGoal('month')">＋</button>
+        </div>
+        <div id="plan-month-list"></div>
+        <div style="margin-top:4px;">
+          <div style="height:4px;background:var(--border);border-radius:2px;"><div id="plan-month-bar" style="height:100%;border-radius:2px;background:#3a8a4a;width:0%;transition:width .3s;"></div></div>
+          <div style="font-size:9px;color:var(--muted);margin-top:3px;font-family:monospace;" id="plan-month-pct"></div>
+        </div>
+      </div>
+      <div style="position:relative;">
+        <div style="position:absolute;left:-20px;top:3px;width:12px;height:12px;border-radius:50%;background:#c8a820;"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <div>
+            <div style="font-size:11px;letter-spacing:2px;color:#c8a820;text-transform:uppercase;font-weight:500;">VISIONE 2026</div>
+            <div style="font-size:9px;color:var(--muted);margin-top:1px;">dove sto andando</div>
+          </div>
+          <button class="plan-add-btn" onclick="addPlanGoal('year')">＋</button>
+        </div>
+        <div id="plan-year-list"></div>
+        <div style="margin-top:4px;">
+          <div style="height:4px;background:var(--border);border-radius:2px;"><div id="plan-year-bar" style="height:100%;border-radius:2px;background:#c8a820;width:0%;transition:width .3s;"></div></div>
+          <div style="font-size:9px;color:var(--muted);margin-top:3px;font-family:monospace;" id="plan-year-pct"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- LA COSA UNA -->
 <div class="section">
@@ -400,6 +465,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:16
   <div style="display:flex;gap:8px;flex-wrap:wrap;">
     <button class="btn" onclick="toggleDiario()" id="diario-btn" style="flex:1;">📖 DIARIO GRATITUDINE</button>
   </div>
+  <div><button class="btn" onclick="window.location.href='manuale.html'" style="width:100%;font-size:11px;">📖 MANUALE</button></div>
   <div style="text-align:center;font-size:9px;">Trail Mugello · TFA · 1% ogni giorno</div>
 </div>
 
@@ -1521,6 +1587,136 @@ function setDailyQuote() {
     localStorage.setItem('dn_next', '');
   }
 })();
+
+var MESI_IT=['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
+var planData=JSON.parse(localStorage.getItem('dn_plan')||'{"week":[],"month":[],"year":[]}');
+function savePlan(){localStorage.setItem('dn_plan',JSON.stringify(planData));}
+function renderPlanList(level,color){
+  var el=document.getElementById('plan-'+level+'-list');
+  if(!el)return;
+  var goals=planData[level]||[];
+  if(!goals.length){el.innerHTML='<div style="font-size:12px;color:var(--muted);font-style:italic;padding:4px 0;">Nessuna priorita ancora.</div>';return;}
+  var out='';
+  for(var i=0;i<goals.length;i++){
+    var g=goals[i];
+    var pct=g.pct||0;
+    var ds=g.done?'text-decoration:line-through;opacity:.4;':'';
+    var prog='';
+    if(level!=='week'){
+      prog='<div style="display:flex;align-items:center;gap:8px;margin-top:8px;">'
+        +'<div style="flex:1;height:3px;background:var(--border);border-radius:2px;">'
+        +'<div style="height:100%;border-radius:2px;background:'+color+';width:'+pct+'%;"></div></div>'
+        +'<button class="plan-pct-btn" onclick="planChg(\''+level+'\','+i+',-10)">-</button>'
+        +'<span class="plan-pct-val">'+pct+'%</span>'
+        +'<button class="plan-pct-btn" onclick="planChg(\''+level+'\','+i+',10)">+</button>'
+        +'</div>';
+    }
+    out+='<div class="plan-goal" style="border-left-color:'+color+';">'
+      +'<div class="plan-goal-row">'
+      +'<div class="plan-goal-text" style="'+ds+'">'+g.text+'</div>'
+      +'<div style="display:flex;gap:6px;flex-shrink:0;">'
+      +'<button class="plan-chk" style="color:'+(g.done?color:'#ccc')+';border-color:'+(g.done?color:'#ccc')+';" onclick="planToggle(\''+level+'\','+i+')">'+(g.done?'v':'o')+'</button>'
+      +'<button class="plan-del" onclick="planDel(\''+level+'\','+i+')">x</button>'
+      +'</div></div>'+prog+'</div>';
+  }
+  el.innerHTML=out;
+  if(level!=='week')updatePlanBar(level,color);
+}
+function planChg(level,idx,delta){
+  planData[level][idx].pct=Math.max(0,Math.min(100,(planData[level][idx].pct||0)+delta));
+  savePlan();
+  renderPlanList(level,level==='month'?'#3a8a4a':'#c8a820');
+}
+function planToggle(level,idx){
+  planData[level][idx].done=!planData[level][idx].done;
+  savePlan();
+  renderPlanList(level,level==='week'?'#3a7abf':level==='month'?'#3a8a4a':'#c8a820');
+}
+function planDel(level,idx){
+  planData[level].splice(idx,1);
+  savePlan();
+  renderPlanning();
+}
+function addPlanGoal(level){
+  var max=level==='week'?2:5;
+  if((planData[level]||[]).length>=max){showNotif(level==='week'?'Max 2 priorita!':'Max 5 obiettivi');return;}
+  var listEl=document.getElementById('plan-'+level+'-list');
+  var inputId='plan-inp-'+level;
+  if(document.getElementById(inputId)){document.getElementById(inputId).focus();return;}
+  var wrap=document.createElement('div');
+  wrap.style.cssText='display:flex;gap:6px;margin-bottom:8px;align-items:center;';
+  var inp=document.createElement('input');
+  inp.id=inputId;
+  inp.style.cssText='flex:1;background:transparent;border:none;border-bottom:1px solid var(--accent);color:var(--text);font-family:var(--mono);font-size:13px;padding:4px 0;outline:none;';
+  inp.placeholder=level==='week'?'priorita settimana...':level==='month'?'obiettivo del mese...':'obiettivo 2026...';
+  var ok=document.createElement('button');
+  ok.className='btn';ok.textContent='OK';ok.style.cssText='padding:4px 10px;font-size:11px;';
+  function doConfirm(){var t=inp.value.trim();wrap.remove();if(!t)return;planData[level].push({text:t,done:false,pct:0});savePlan();renderPlanning();}
+  ok.onclick=doConfirm;
+  inp.addEventListener('keydown',function(e){if(e.key==='Enter')doConfirm();if(e.key==='Escape')wrap.remove();});
+  wrap.appendChild(inp);wrap.appendChild(ok);
+  listEl.insertBefore(wrap,listEl.firstChild);
+  inp.focus();
+}
+function updatePlanBar(level,color){
+  var goals=planData[level]||[];
+  if(!goals.length)return;
+  var avg=goals.reduce(function(s,g){return s+(g.pct||0);},0)/goals.length;
+  var bar=document.getElementById('plan-'+level+'-bar');
+  var pct=document.getElementById('plan-'+level+'-pct');
+  if(bar)bar.style.width=avg+'%';
+  if(pct){
+    if(level==='month'){
+      var d=new Date(),giorni=new Date(d.getFullYear(),d.getMonth()+1,0).getDate(),tp=Math.round(d.getDate()/giorni*100);
+      pct.textContent=Math.round(avg)+'% completato - '+tp+'% del mese trascorso';
+    }else{
+      pct.textContent=Math.round(avg)+'% degli obiettivi annuali';
+    }
+  }
+}
+function renderPlanning(){
+  var today=new Date();
+  var dow=today.getDay()===0?7:today.getDay();
+  var mon=new Date(today);mon.setDate(today.getDate()-(dow-1));
+  var sun=new Date(mon);sun.setDate(mon.getDate()+6);
+  function p2(n){return String(n).padStart(2,'0');}
+  var wl=document.getElementById('plan-week-lbl');
+  if(wl)wl.textContent='SETTIMANA '+p2(mon.getDate())+'/'+p2(mon.getMonth()+1)+' > '+p2(sun.getDate())+'/'+p2(sun.getMonth()+1);
+  var ml=document.getElementById('plan-month-lbl');
+  if(ml)ml.textContent=MESI_IT[today.getMonth()].toUpperCase()+' '+today.getFullYear();
+  var sY=new Date(today.getFullYear(),0,1),eY=new Date(today.getFullYear()+1,0,1);
+  var yp=Math.round((today-sY)/(eY-sY)*100);
+  var ybar=document.getElementById('plan-year-bar'),ypct=document.getElementById('plan-year-pct');
+  if(ybar)ybar.style.width=yp+'%';
+  if(ypct)ypct.textContent=yp+"% dell'anno trascorso";
+  renderPlanList('week','#3a7abf');
+  renderPlanList('month','#3a8a4a');
+  renderPlanList('year','#c8a820');
+}
+(function(){
+  var today=new Date();if(today.getDay()!==1)return;
+  var k=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+  if(localStorage.getItem('dn_plan_week_reset')===k)return;
+  localStorage.setItem('dn_plan_week_reset',k);planData.week=[];savePlan();
+})();
+(function(){
+  var today=new Date();if(today.getDate()!==1)return;
+  var k=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0');
+  if(localStorage.getItem('dn_plan_month_reset')===k)return;
+  localStorage.setItem('dn_plan_month_reset',k);planData.month=[];savePlan();
+})();
+(function(){
+  var today=new Date();
+  var todayStr=today.getFullYear()+'-'+today.getMonth()+'-'+today.getDate();
+  tasks=tasks.filter(function(t){
+    if(!t.done)return true;
+    var cr=t.ts?new Date(t.ts):null;
+    if(!cr)return false;
+    return cr.getFullYear()+'-'+cr.getMonth()+'-'+cr.getDate()===todayStr;
+  });
+  localStorage.setItem('dn_tasks',JSON.stringify(tasks));
+})();
+
 advanceWeekTasks();
 updateDate();
 setInterval(updateDate,30000);
@@ -1537,6 +1733,7 @@ loadGratitudine();
 renderAreeRadar();
 renderDisc();
 renderVision();
+renderPlanning();
 setDailyQuote();
 checkDomenicaAlert();
 </script>
