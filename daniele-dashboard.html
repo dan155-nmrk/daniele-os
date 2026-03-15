@@ -1608,7 +1608,7 @@ function renderPlanList(level,color){
   for(var i=0;i<goals.length;i++){
     var g=goals[i];
     var pct=g.pct||0;
-    var ds=g.done?'text-decoration:line-through;opacity:.4;':'';
+    var ds=g.done&&level!=='week'?'text-decoration:line-through;opacity:.4;':'';
     var prog='';
     if(level!=='week'){
       prog='<div style="display:flex;align-items:center;gap:8px;margin-top:8px;">'
@@ -1625,13 +1625,15 @@ function renderPlanList(level,color){
     var dnBtn=i<goals.length-1
       ?'<button onclick="planMove(\''+level+'\','+i+',1)" style="background:none;border:none;color:#bbb;font-size:13px;cursor:pointer;padding:1px 3px;line-height:1;">&#9660;</button>'
       :'<span style="display:inline-block;width:22px;"></span>';
-    out+='<div class="plan-goal" style="border-left-color:'+color+';">'
+    var cardStyle='border-left-color:'+color+';'+(g.done&&level==='week'?'background:rgba(58,122,191,0.15);border-left-color:#3a7abf;border-left-width:4px;':'')+(level==='week'?'cursor:pointer;':'');
+    var weekClick=level==='week'?'onclick="planToggle(\''+level+'\','+i+')"':'';
+    out+='<div class="plan-goal" '+weekClick+' style="'+cardStyle+'">'
       +'<div class="plan-goal-row">'
-      +'<div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;margin-right:6px;">'+upBtn+dnBtn+'</div>'
+      +(level!=='week'?'<div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;margin-right:4px;">'+upBtn+dnBtn+'</div>':'')
       +'<div class="plan-goal-text" style="'+ds+'">'+g.text+'</div>'
       +'<div style="display:flex;gap:6px;flex-shrink:0;">'
-      +'<button class="plan-chk" style="color:'+(g.done?color:'#ccc')+';border-color:'+(g.done?color:'#ccc')+';" onclick="planToggle(\''+level+'\','+i+')">'+(g.done?'v':'o')+'</button>'
-      +'<button class="plan-del" onclick="planDel(\''+level+'\','+i+')">x</button>'
+      +(level!=='week'?'<button class="plan-chk" style="color:'+(g.done?color:'#ccc')+';border-color:'+(g.done?color:'#ccc')+';" onclick="planToggle(\''+level+'\','+i+')">'+(g.done?'v':'o')+'</button>':'')
+      +'<button class="plan-del" onclick="event.stopPropagation();planDel(\''+level+'\','+i+')" style="background:none;border:none;color:#ccc;font-size:16px;cursor:pointer;">x</button>'
       +'</div></div>'+prog+'</div>';
   }
   el.innerHTML=out;
