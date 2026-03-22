@@ -204,7 +204,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:16
   <div class="pill">
     <div class="pill-lbl">⏳ Settimane</div>
     <div class="pill-val" id="weeks-left" style="color:var(--danger);font-size:22px;">—</div>
-    <div class="pill-sub">rimanenti · 80 anni</div>
+    <div class="pill-sub">rimanenti · 90 anni</div>
   </div>
 </div>
 
@@ -446,10 +446,17 @@ body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:16
 </div>
 
 <!-- DISCIPLINA -->
-<div class="section" id="disc-pill" onclick="disciplinaPress()" style="cursor:pointer;text-align:center;">
+<div class="section" style="text-align:center;">
   <div style="font-size:9px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:6px;">💪 DISCIPLINA → 65KG</div>
-  <div style="font-family:var(--display);font-size:64px;letter-spacing:2px;line-height:1;" id="disc-count">—</div>
-  <div style="font-size:11px;color:var(--muted);margin-top:6px;" id="disc-sub">giorni rimasti · tocca la sera</div>
+  <div id="disc-pill" onclick="disciplinaPress()" style="cursor:pointer;">
+    <div style="font-family:var(--display);font-size:64px;letter-spacing:2px;line-height:1;" id="disc-count">—</div>
+    <div style="font-size:11px;color:var(--muted);margin-top:6px;" id="disc-sub">giorni rimasti · tocca la sera</div>
+  </div>
+  <div style="font-size:11px;color:var(--muted);margin-top:8px;" id="disc-date">→ obiettivo entro il —</div>
+  <div style="margin-top:12px;display:flex;justify-content:center;gap:16px;">
+    <button onclick="event.stopPropagation();discCorrezione(-1)" style="background:none;border:1px solid var(--border);color:var(--muted);font-family:var(--mono);font-size:11px;width:20px;height:20px;border-radius:2px;cursor:pointer;line-height:1;">−</button>
+    <button onclick="event.stopPropagation();discCorrezione(1)" style="background:none;border:1px solid var(--border);color:var(--muted);font-family:var(--mono);font-size:11px;width:20px;height:20px;border-radius:2px;cursor:pointer;line-height:1;">+</button>
+  </div>
 </div>
 
 
@@ -1159,6 +1166,7 @@ function renderDisc() {
   var el = document.getElementById("disc-count");
   var sub = document.getElementById("disc-sub");
   var pill = document.getElementById("disc-pill");
+  var dateEl = document.getElementById("disc-date");
   if (!el) return;
 
   var today = new Date();
@@ -1175,6 +1183,22 @@ function renderDisc() {
     sub.textContent = "giorni rimasti · tocca la sera";
     pill.style.background = "";
   }
+
+  // Data stimata: oggi + giorni rimasti
+  if (dateEl) {
+    var target = new Date(today);
+    target.setDate(today.getDate() + discData.count);
+    var mesi = ["gen","feb","mar","apr","mag","giu","lug","ago","set","ott","nov","dic"];
+    dateEl.textContent = "obiettivo entro il " + target.getDate() + " " + mesi[target.getMonth()] + " " + target.getFullYear();
+  }
+}
+
+function discCorrezione(delta) {
+  discData.count = Math.max(0, discData.count + delta);
+  if (delta > 0) discData.lastDate = null;
+  localStorage.setItem("dn_disc", JSON.stringify(discData));
+  renderDisc();
+  showNotif(delta > 0 ? "+1 giorno · ricordati stasera" : "-1 giorno");
 }
 
 function disciplinaPress() {
